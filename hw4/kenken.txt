@@ -1,0 +1,95 @@
+Performance Results:
+I used 'statistics' predicate in the definition of the 'kenken' and 'plain_kenken' predicates. 
+And I collected the performance data for the N = 3 test case, generation of each proof has a performance summary as below:
+
+For kenken(4,[],T), 
+	Memory               limit         in use            free
+   trail  stack      16383 Kb            3 Kb        16380 Kb
+   cstr   stack      16383 Kb            6 Kb        16377 Kb
+   global stack      32767 Kb            3 Kb        32764 Kb
+   local  stack      16383 Kb            2 Kb        16381 Kb
+   atom   table      32768 atoms      1785 atoms     30983 atoms
+
+Times              since start      since last
+   cpu    time       0.015 sec       0.001 sec
+  
+
+For plain_kenken(4,[],T):
+	Memory               limit         in use            free
+   trail  stack      16383 Kb            0 Kb        16383 Kb
+   cstr   stack      16384 Kb            0 Kb        16384 Kb
+   global stack      32767 Kb            3 Kb        32764 Kb
+   local  stack      16383 Kb            3 Kb        16380 Kb
+   atom   table      32768 atoms      1785 atoms     30983 atoms
+
+Times              since start      since last
+   cpu    time       0.038 sec       0.000 sec
+
+   
+
+  Comparison for cpu time:
+  Based on the data for N=4 case, we can see that 'kenken'(with 0.015s) has better performance
+  than 'plain_kenken'(with 0.038s).
+
+  Comparison for Memory usage:
+  kenken' uses stack storage for trail and cstr and about the same storage for local and global values.
+  'plain_kenken' does not allocate memory for those two, and it has more memory storage for
+  global and local variables. 
+
+Solving no-op KenKen:
+We pass a new parameter 'O' to indicate the list of operators corresponding to each of the constraint.
+The type of 'O' is one of +, -, *, /. The predicate 'noop_kenken' looks like:
+
+    noop_kenken(N, C, O, T)
+
+N: size of the table,
+C: constraints without operators
+O: list of operators, in the same order of the constraints
+T: solved table
+
+Example test case for noop kenken:
+  noop_kenken_testcase(
+  6,
+  [
+   (11, [1-1, 2-1]),
+   (2, 1-2, 1-3),
+   (20, [1-4, 2-4]),
+   (6, [1-5, 1-6, 2-6, 3-6]),
+   (3, 2-2, 2-3),
+   (3, 2-5, 3-5),
+   (240, [3-1, 3-2, 4-1, 4-2]),
+   (6, [3-3, 3-4]),
+   (6, [4-3, 5-3]),
+   (7, [4-4, 5-4, 5-5]),
+   (30, [4-5, 4-6]),
+   (6, [5-1, 5-2]),
+   (9, [5-6, 6-6]),
+   (8, [6-1, 6-2, 6-3]),
+   (2, 6-4, 6-5)
+  ]
+).
+
+Exmample call of noop_kenkne solver:
+fd_set_vector_max(255), noop_kenken_testcase(N,C), kenken(N,C,O,T).
+
+Example output:
+C = [11[1-1,2-1], (2,1-2,1-3), 20[1-4,2-4], 6[1-5,1-6,2-6,3-6],
+     (3,2-2,2-3), (3,2-5,3-5), 240[3-1,3-2,4-1,4-2], 6[3-3,3-4],
+     6[4-3,5-3], 7[4-4,5-4,5-5], 30[4-5,4-6], 6[5-1,5-2],
+     9[5-6,6-6], 8[6-1,6-2,6-3], (2,6-4,6-5)]
+     O = [+, -, .../, *].
+     T = [[5,6,3,4,1,2],
+          [6,1,4,5,2,3],
+          [4,5,2,3,6,1],
+          [3,4,1,2,5,6],
+          [2,3,6,1,4,5],
+          [1,2,5,6,3,4]]]
+
+If there are more solutions with different O and T, when user type ';',
+the solver should give more answers. Otherwise, the solver simply 
+outputs 'no'.
+ 
+
+
+
+

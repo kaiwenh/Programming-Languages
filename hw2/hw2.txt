@@ -1,0 +1,50 @@
+1. convert_grammar:
+The grammar in hw2 is a pair of a start symbol and a production function
+which matches a symbol and returns a list of corresponding right-hand sides.
+So in order to convert hw1 grammar to hw2 grammar, we need to 
+construct this produciton function by matching the starting symbol and return
+all rules with this start symbol as left hand side. So I write a function
+'get_rule_list' which takes a non-terminal symbol and a rule list and matches 
+the non-terminal symbol with the left-hand side of all rules, if find a match, 
+add the right-hand side of the rule to the return value and continue 
+searching till the end of the rule list. If not, simply continue searching 
+the rest of the rules. Then pass this function as a return value to the 
+convert_grammar function; 'get_rule_list' function will return a list of 
+lists in 'convert_grammar'.
+
+2. parse_prefix:
+I used the ideas taught in discussion session: building two helper matchers
+
+1) and_matcher: 
+match for a fragment with multiple terms. Each of the term may
+be terminal or non-terminal, if it is terminal, simply match it with a rule 
+starting with that terminal symbol; else recursively apply and_matcher
+with this symbol until it reaches a terminal symbol and use or_matcher to
+try alternative matchings for this non_terminal symbol. If the all rules 
+have been used simply return what the 'acceptor' returns.
+
+2) or_matcher:
+check for all alternative rules for the same non-terminal symbol. For each
+rule, use 'and_matcher' and return what 'and_matcher' returns; if current
+rule returns 'None', go on to next rule. 
+
+3) parse_prefix:
+takes in a grammar, an acceptor and fragments. It passes the start_symbol, 
+acceptor and fragments to 'or_matcher' and returns what 'or_matcher' returns.
+
+Both and_matcher and or_matcher takes in acceptor, existing derivation and 
+the rest fragments. The tricky part is to identify the mutual recursion 
+between the two functions, which is essential in achieving the goal of 
+recursive match for a given expression. The function signatures also takes 
+some time because there are quite a few components attached to each function 
+and the interaction between them requires careful thinking.
+
+Weakness of this parser generator: 
+This generated parser behaves with the limition that it assumes 
+left-associativity in the grammar. Without this assumption, it is possible
+for the parser to be stuck in an infinite loop. Suppose the case: N->N t. 
+The parser will try to match N first, and since it is non-terminal, it will 
+recursively call 'or_matcher'. And in calling 'or_matcher', it will still 
+need to match N first, which leads to an infinite loop.
+
+

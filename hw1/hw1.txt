@@ -1,0 +1,79 @@
+subset a b: 
+The basic idea is to check every element in a is in b. Since OCaml is 
+a functional language, recursion is a better choice than iteration. So
+I use recursion: first check the first element of a then recursively 
+call subset on the tail of the a. Base case is empty set, which is also 
+a subset of b.
+
+equal_sets a b:
+Two sets are equal are equivalent to they are the subset of each other. 
+So I utilize the 'subset' function above to check if a is subset of b 
+and b is a subset of a. If yes, then they are equal. 
+
+set_union a b:
+For union, I also use the matching to consider for empty list and non-
+empty list. If operand a is empty, then simply return b. Here I use
+'sort' with 'compare' function to make all final results in increasing 
+order. If a is non-empty, then first check if the first element is in b,
+if yes, we can effectively ignore this element because it is already in 
+b and recursively call 'set_union' on the tail of a and b; if no, then 
+we first need to add this element into the union, which is done by 
+putting it in front of b to form a new list and then recursively call
+set_union on the tail of a and the new b. This method is derived based 
+on the startpoint of using recursion to solve the problem.
+
+
+set_intersection a b:
+The idea for this function is also to use recursion. If the first 
+element of a is in b, then add it in the result from the recursive 
+call on the tail of a and list b. If not, ignore it and only 
+return the result from the tail of a and list b.
+
+set_diff a b:
+Similar to the idea of intersection, recursively check each element 
+in a and keep only those that are not in b. Use 'List.mem' to check 
+existence and use '::' to combine the recursion result and current
+element.
+
+computed_fixed_point eq f x:
+My implementation of this function follows the definition of
+computing a fixed point. Which is to iteratively check if x = f x
+if not, then proceed to f x = f (f x) passing f x as the argument x.
+Also use recursion to inductively compute the results. 
+
+computed_periodic_point eq f p x:
+The idea for the recursive function comes from two cases:
+if the period p can be found by starting from x or if it is not
+For the first case, we decrement p by 1 and pass 'f x' as argument
+x and then compare x with the value returned by the recursive 
+function, if they are equal then x is the value for period p;
+For the second case, x is not the starting point for period p, 
+then simply recursively call on (f x)
+
+
+filter_blind_alleys:
+Initially, I want to have a iterative check for the given grammar. 
+But that turned out to be undoable because there are nonterminal 
+symbols which reach other nonterminal symbols, which may or may not 
+eveutually reach terminal symbols.
+
+My main ideas for this function are two steps:
+1) build up a set containing all rules that can reach a terminal
+symbol. 
+2) recursively check each rule if they are in the terminal set. 
+My main difficulty lies in writing the function to build up the
+terminal set and I think about using helper functions to check 
+an individual symbol (function 'check symbol') and to check a rule
+(function 'check_rule') 
+I encountered two difficulties when writing the 'build_terminal_set'
+function: what are the conditions to check for branching cases and how
+to use compute_fixed_point to stop the recursive building. The first is
+solved by thinking about all possible cases for the first rule in the
+given list and the second is solved by paying attention to the 
+type of function that is passed to 'computed_fixed_point'.
+It also took me much time to figure out the passing of arguments 
+across different levels of the functions.
+
+
+
+
